@@ -50,12 +50,15 @@
     <!-- Login Block -->
     <div class="block push-bit">
         <!-- Login Form -->
-        <form action="index.html" method="post" id="form-login" class="form-horizontal form-bordered form-control-borderless">
+        <form action="{{action('Login\LoginController@post_handle')}}" method="post" id="form-login" class="form-horizontal form-bordered form-control-borderless">
+
+            {{csrf_field()}}
+
             <div class="form-group">
                 <div class="col-xs-12">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="gi gi-user"></i></span>
-                        <input type="text" id="login-email" name="login-email" class="form-control input-lg" placeholder="Kullanici Adi">
+                        <input type="text" id="username" name="username" class="form-control input-lg" placeholder="Kullanici Adi">
                     </div>
                 </div>
             </div>
@@ -63,7 +66,7 @@
                 <div class="col-xs-12">
                     <div class="input-group">
                         <span class="input-group-addon"><i class="gi gi-asterisk"></i></span>
-                        <input type="password" id="login-password" name="login-password" class="form-control input-lg" placeholder="Sifre">
+                        <input type="password" id="password" name="password" class="form-control input-lg" placeholder="Sifre">
                     </div>
                 </div>
             </div>
