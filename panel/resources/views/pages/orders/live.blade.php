@@ -53,14 +53,17 @@
         </div>
         <!-- END Responsive Full Block -->
     </div>
-    <audio id="alarm" src="/ses.mp3" muted="muted"></audio>
 
 
-    <script src="/js/socket.js"></script>
-    <script src="/js/auth.js"></script>
+
+@endsection
+
+@section('especial_footer')
+    <script src="/js/pages/tablesGeneral.js"></script>
+    <script>$(function(){ TablesGeneral.init(); });</script>
+
+
     <script>
-        const socket = io.connect('http://localhost:3000');
-        let token = null;
 
         getUser = async(user_id, token) => {
             try{
@@ -92,35 +95,77 @@
             }
         }
 
-        authenticate =  async() => {
-            try {
-                const response = await fetch(`${url}/authenticate`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': 'fbc9b13d-ee38-4098-aa53-d7ff19a7650c',
+        putOrderCancel = async(token, order_id) => {
+            try{
+                const response = await fetch(`${url}/api/orders/status/cancel/`,{
+                    method:'PUT',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'x-access-token': token,
+                        'x-api-key':api_key
                     },
-                    body: JSON.stringify({
-                        username: 'admin',
-                        password: 'admin'
-                    }),
+                    body:JSON.stringify({order_id})
+
+
                 });
-                return response
-            } catch (e) {
+                return response;
+            }catch (e) {
                 return e;
             }
         }
 
+        putOrderDelivered = async(token, order_id) => {
+            try{
+                const response = await fetch(`${url}/api/orders/status/delivered`, {
+                    method:'PUT',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'x-access-token': token,
+                        'x-api-key': api_key
+                    },
+                    body: JSON.stringify({order_id})
+                });
+                return response;
+            }catch(e){
+                res.json(e);
+            }
+        }
 
-        authenticate()
-            .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                token = data.status.token;
-                console.log(token);
-                return token;
-            })
+        putOrderCalled = async(token, order_id) => {
+            try{
+                const response = await fetch(`${url}/api/orders/status/called`, {
+                    method:'PUT',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'x-access-token': token,
+                        'x-api-key': api_key
+                    },
+                    body: JSON.stringify({order_id})
+                });
+                return response;
+            }catch(e){
+                res.json(e);
+            }
+        }
+
+        putOrderHibernate = async(token, order_id) => {
+            try{
+                const response = await fetch(`${url}/api/orders/status/hibernate`, {
+                    method:'PUT',
+                    headers:{
+                        'Content-Type':'application/json',
+                        'x-access-token': token,
+                        'x-api-key': api_key
+                    },
+                    body: JSON.stringify({order_id})
+                });
+                return response;
+            }catch(e){
+                res.json(e);
+            }
+        }
+
+        auth
             .then((token) => {
                 getLiveOrders(token)
                     .then((response) => {
@@ -175,6 +220,77 @@
                 })
         });
 
+        checkOrderStatus = (order_status, order_id) => {
+            if(order_status == 0)
+                return `<a href="javascript:void(0)"  class="label label-danger">Onaylanmamis</a>`;
+            else if(order_status == 1)
+                return `<a href="javascript:void(0)"  class="label label-warning">Beklemede</a>`;
+            else if(order_status == 2)
+                return `<a href="javascript:void(0)"  class="label label-info">Gorusuldu</a>`;
+        }
+
+        setOrderDelivered = (elem) => {
+            //alert(elem.getAttribute('data-orderid'));
+            if(confirm('Siparisi onaylamak icin emin misin?')){
+
+                const orderid = elem.getAttribute('data-orderid');
+                const element = document.querySelectorAll(`[data-roworderid='${orderid}']`);
+                putOrderDelivered(token, orderid)
+                    .then(response => {
+                        return response.json()
+                    })
+                    .then((result) => {
+                        alert(result.message);
+                        element[0].parentNode.removeChild(element[0]);
+                    })
+                    .catch(err => console.log(err))
+            }
+        };
+        setOrderCalled = (elem) => {
+            const orderid = elem.getAttribute('data-orderid');
+            const element = document.querySelectorAll(`[data-roworderid='${orderid}']`);
+            element[0].style.backgroundColor = '#7abce1';
+            putOrderCalled(token, orderid)
+                .then(response => {
+                    return response.json()
+                })
+                .then((result) => {
+                    element[0].style.backgroundColor = '#7abce7';
+                })
+                .catch(err => console.log(err))
+
+        }
+        setOrderHibernate = (elem) => {
+            const orderid = elem.getAttribute('data-orderid');
+            const element = document.querySelectorAll(`[data-roworderid='${orderid}']`);
+            element[0].style.backgroundColor = '#f7be60';
+            putOrderHibernate(token, orderid)
+                .then(response => {
+                    return response.json()
+                })
+                .then((result) => {
+                    element[0].style.backgroundColor = '#f7be64';
+                })
+                .catch(err => console.log(err))
+
+        }
+        setOrderCancel = (elem) => {
+            if(confirm('Siparis iptali icin emin misin?')){
+                const orderid = elem.getAttribute('data-orderid');
+                const element = document.querySelectorAll(`[data-roworderid='${orderid}']`);
+                // element[0].parentNode.removeChild(element[0]);
+                putOrderCancel(token, orderid)
+                    .then((response) => {
+                        return response.json();
+                    })
+                    .then((result) => {
+                        alert(result.message);
+                        element[0].parentNode.removeChild(element[0]);
+                    })
+                    .catch(err => console.log(err))
+            }
+        }
+
         insertLiveOrder = (_id, order_note, order_date, customer_id, order_status, token, isNewOrder) => {
 
             const liveOrders = document.getElementById('liveOrders');
@@ -190,6 +306,14 @@
 
             if(isNewOrder)
                 row.style.backgroundColor = '#F0F4C3';
+            else if(order_status == 0)
+                row.style.backgroundColor = '#fbfbfb';
+            else if(order_status == 1)
+                row.style.backgroundColor = '#f7be64';
+            else if(order_status == 2)
+                row.style.backgroundColor = '#7abce7';
+
+            row.setAttribute('data-roworderid', _id);
 
             /* order id */
 
@@ -209,7 +333,7 @@
                     return response.json();
                 })
                 .then((user) => {
-                    customer_id_.innerHTML = `<a href="">${user.name} <small>(${user.username})</small></a>`;
+                    customer_id_.innerHTML = `<a href="" style='color:#123f5d!important'>${user.name} <small>(${user.username})</small></a>`;
                     customer_adress_.innerHTML = `<a href="javascript:void(0)" class="label label-success">${user.address}</a>`;
                     customer_phone_.innerHTML = user.phone;
                 })
@@ -222,27 +346,24 @@
 
             /* siparis tarihi */
 
-            const timeOfDate_ = order_date.split('T');
-            const timeOfDate = timeOfDate_[1].split('.');
-            const getDate_ = timeOfDate_[0].split('-');
-            const getDay = getDate_[2];
-            const getMonth = getDate_[1];
-
-            order_time_.innerHTML = `${getDay}/${getMonth} ${timeOfDate[0]}`;
+            order_time_.innerHTML = orderDateReform(order_date);
 
             /* siparis durumu */
 
-            if(order_status == 0)
-                order_status_.innerHTML = '<a href="javascript:void(0)" class="label label-danger">Onaylanmamis</a>';
-            else
-                order_status_.innerHTML = '<a href="javascript:void(0)" class="label label-success">Onaylanmis</a>';
+            order_status_.setAttribute('data-statusorderid', _id);
+            order_status_.innerHTML = checkOrderStatus(order_status, _id);
 
             /* islem */
 
             transaction.className = 'text-center';
             transaction.innerHTML = `<div class="btn-group btn-group-xs">
-                                <a href="javascript:void(0)" data-toggle="tooltip" title="Onayla" class="btn btn-success"><i class="fa fa-thumbs-up"></i></a>
-                                <a href="javascript:void(0)" data-toggle="tooltip" title="Iptal Et" class="btn btn-danger"><i class="fa fa-times"></i></a>
+                                <a href="javascript:void(0)" data-toggle="tooltip" onclick='setOrderDelivered(this)' data-orderid='${_id}'  title="Onayla" class="btn btn-success"><i class="fa fa-thumbs-up"></i></a>
+
+                                <a href="javascript:void(0)" data-toggle="tooltip" onclick='setOrderCalled(this)' data-orderid='${_id}'  title="Gorusuldu" class="btn btn-info"><i class="fa fa-phone"></i></a>
+
+                                <a href="javascript:void(0)" data-toggle="tooltip" onclick='setOrderHibernate(this)'  data-orderid='${_id}' title="Beklet" class="btn btn-warning"><i class="fa fa-circle-o"></i></a>
+
+                                <a href="javascript:void(0)" data-toggle="tooltip" onclick='setOrderCancel(this)' data-orderid='${_id}' title="Iptal Et" class="btn btn-danger"><i class="fa fa-times"></i></a>
                             </div>`;
 
         }
@@ -258,6 +379,12 @@
             console.log(order);
 
 
+        })
+
+        socket.on('changedOrderStatus', (data) => {
+            const element = document.querySelectorAll(`[data-statusorderid='${data.order_id}']`);
+
+            element[0].innerHTML = checkOrderStatus(data.status, data.order_id);
         })
 
         titleAdmonition = (start) => {
@@ -292,11 +419,12 @@
         }
 
         newOrderSound = () => {
-            document.getElementById('alarm').play();
-            document.getElementById('alarm').muted = false;
+            ses = new Audio('/ses.mp3');
+            ses.play();
             titleAdmonition(true);
         }
 
     </script>
+
 @endsection
 

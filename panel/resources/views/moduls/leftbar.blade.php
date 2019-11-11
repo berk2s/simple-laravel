@@ -36,8 +36,23 @@
                         <li>
                             <a href="/canli">Canli Siparisler</a>
                         </li>
+
+
                         <li>
-                            <a href="/siparisler">Gecmis Siparisler</a>
+                            <a href="#" class="sidebar-nav-submenu "><i class="fa fa-angle-left sidebar-nav-indicator"></i>Siparisler</a>
+                            <ul style="display:;">
+                                <li>
+                                    <a href="/siparis/tumu">Tum Siparisler</a>
+                                </li>
+                                <li>
+                                    <a href="/siparis/basarili">Basarili Siparisler</a>
+                                </li>
+                                <li>
+                                    <a href="/siparis/iptal">Iptal Edilen Siparisler</a>
+                                </li>
+
+
+                            </ul>
                         </li>
                     </ul>
                 </li>
@@ -48,15 +63,48 @@
             <!-- Sidebar Notifications -->
             <div class="sidebar-header sidebar-nav-mini-hide">
                                 <span class="sidebar-header-options clearfix">
-                                    <a href="javascript:void(0)" data-toggle="tooltip" title="Yenile"><i class="gi gi-refresh"></i></a>
+                                    <a href="javascript:void(0)" id='leftBarRefresh' data-toggle="tooltip" title="Yenile"><i class="gi gi-refresh"></i></a>
                                 </span>
-                <span class="sidebar-header-title">Bekleyen Siparisler</span>
+                <span class="sidebar-header-title">Bilgilendirici</span>
             </div>
             <div class="sidebar-section sidebar-nav-mini-hide">
 
+                <div class="alert alert-success alert-alt">
+                    <i class="fa fa-info-circle"></i> Basarili Siparis Sayisi
+                    <br>
+                    <b id="deliveredOrders"><i class="fa fa-spinner fa-spin"></i></b>
+                </div>
+
+
+
+                <div class="alert alert-info alert-alt">
+                    <i class="fa fa-info-circle"></i> Gorusulen Siparis Sayisi
+                    <br>
+                    <b id="calledOrders"><i class="fa fa-spinner fa-spin"></i></b>
+                </div>
+
                 <div class="alert alert-warning alert-alt">
-                    <small>3 hours ago</small><br>
-                    <i class="fa fa-exclamation fa-fw"></i> Running low on space<br><strong>18GB in use</strong> 2GB left
+                    <i class="fa fa-info-circle"></i> Bekleyen Siparis Sayisi
+                    <br>
+                    <b id="hibarnateOrders"><i class="fa fa-spinner fa-spin"></i></b>
+                </div>
+
+                <div class="alert alert-danger alert-alt">
+                    <i class="fa fa-info-circle"></i> Onaylanmamis Siparis Sayisi
+                    <br>
+                    <b id="unrecognizedOrders"><i class="fa fa-spinner fa-spin"></i></b>
+                </div>
+
+                <div class="alert alert-danger alert-alt">
+                    <i class="fa fa-info-circle"></i> Iptal Edilen Siparis Sayisi
+                    <br>
+                    <b id="canceledOrders"><i class="fa fa-spinner fa-spin"></i></b>
+                </div>
+
+                <div class="alert alert-info alert-alt">
+                    <i class="fa fa-info-circle"></i> Son Gelen Siparis Zamani
+                    <br>
+                    <b id="lastOrderTime"><i class="fa fa-spinner fa-spin"></i></b>
                 </div>
 
             </div>
