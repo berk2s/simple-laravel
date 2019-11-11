@@ -11,8 +11,8 @@
 |
 */
 
-Route::get('/', 'Login\LoginController@get_index')->middleware('guest');
-Route::post('/', 'Login\LoginController@post_handle')->middleware('auth');
+Route::get('/', 'Login\LoginController@get_index')->middleware('guest')->name('login');
+Route::post('/', 'Login\LoginController@post_handle');
 
 Route::get('/anasayfa', 'Dashboard\DashboardController@get_index')->middleware('auth');
 

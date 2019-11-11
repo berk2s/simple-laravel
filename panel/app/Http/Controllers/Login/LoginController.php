@@ -27,7 +27,7 @@ class LoginController extends Controller
         ];
 
         if(Auth::attempt($userdata))
-            return 'you logged!';
+            return redirect('/anasayfa');
         else
             return redirect('/');
 
